@@ -1,0 +1,26 @@
+{
+    "name": "mad-snippets",
+    "title": "MAD Snippets",
+	"version": "0.0.1",
+    "description": "A collection of MAD snippets for Brackets.",
+    "homepage": "https://madw3b.nl/snippets",
+    "author": "Madgizmo (madw3b.nl)",
+    "license": "MIT",
+    "categories": "editing",
+    "keywords": [
+        "snippets",
+		"jquery",
+		"php",
+		"vanilla js",
+		"css",
+		"html"
+    ],
+    "files": [
+        "main.js",
+        "snippet.js",
+        "README.md"
+    ],
+    "engines": {
+        "brackets": ">=0.31.3"
+    }
+}
