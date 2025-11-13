@@ -1,0 +1,29 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CLASSES_ROOT\.php\shell\OpenWithPhoenixCode]
+@="Open with Phoenix Code"
+"Icon"="C:\\Portable\\PhoenixCode\\Phoenix Code.exe"
+
+[HKEY_CLASSES_ROOT\.php\shell\OpenWithPhoenixCode\command]
+@="\"C:\\Portable\\PhoenixCode\\Phoenix Code.exe\" \"%1\""
+
+[HKEY_CLASSES_ROOT\.html\shell\OpenWithPhoenixCode]
+@="Open with Phoenix Code"
+"Icon"="C:\\Portable\\PhoenixCode\\Phoenix Code.exe"
+
+[HKEY_CLASSES_ROOT\.html\shell\OpenWithPhoenixCode\command]
+@="\"C:\\Portable\\PhoenixCode\\Phoenix Code.exe\" \"%1\""
+
+[HKEY_CLASSES_ROOT\.js\shell\OpenWithPhoenixCode]
+@="Open with Phoenix Code"
+"Icon"="C:\\Portable\\PhoenixCode\\Phoenix Code.exe"
+
+[HKEY_CLASSES_ROOT\.js\shell\OpenWithPhoenixCode\command]
+@="\"C:\\Portable\\PhoenixCode\\Phoenix Code.exe\" \"%1\""
+
+[HKEY_CLASSES_ROOT\.css\shell\OpenWithPhoenixCode]
+@="Open with Phoenix Code"
+"Icon"="C:\\Portable\\PhoenixCode\\Phoenix Code.exe"
+
+[HKEY_CLASSES_ROOT\.css\shell\OpenWithPhoenixCode\command]
+@="\"C:\\Portable\\PhoenixCode\\Phoenix Code.exe\" \"%1\""
