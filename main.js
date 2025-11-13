@@ -1,26 +1,9 @@
 /*
 The MIT License (MIT)
-
 Copyright (c) 2015 HTML5andBeyond.com
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Permission is hereby granted, free of charge...
 */
+
 define(function (require, exports, module) {
     'use strict';
 
@@ -39,6 +22,7 @@ define(function (require, exports, module) {
         COMMAND_NAME      = 'Enable Mad Snippets',
         COMMAND_ID        = 'madapbox.toggleMADSnippets';
 
+    // --- flatten nested snippets ---
     function flattenSnippets(obj, prefix = "") {
         let result = {};
         for (let key in obj) {
@@ -51,12 +35,23 @@ define(function (require, exports, module) {
         return result;
     }
 
+    // --- get the last open tag before the cursor ---
+    function getCurrentTag(editor) {
+        var cursor = editor.getCursorPos();
+        var textBeforeCursor = editor.document.getRange({ line: 0, ch: 0 }, cursor);
+        var matches = [...textBeforeCursor.matchAll(/<([a-zA-Z-]+)\s[^>]*$/g)];
+        if (!matches.length) return null;
+        return matches[matches.length - 1][1];
+    }
+
+    // --- detect current editing context ---
     function getContext(editor) {
         var filePath = editor.document.file.fullPath;
         var fileExt = filePath.split('.').pop().toLowerCase();
         var cursor = editor.getCursorPos();
         var textBeforeCursor = editor.document.getRange({ line: 0, ch: 0 }, cursor);
 
+        // PHP detection
         if (fileExt === "php") {
             var phpOpenTags = [...textBeforeCursor.matchAll(/<\?php/gi)].map(m => m.index);
             var phpCloseTags = [...textBeforeCursor.matchAll(/\?>/gi)].map(m => m.index);
@@ -67,6 +62,11 @@ define(function (require, exports, module) {
             }
         }
 
+        // Version detection
+        var versionAttr = textBeforeCursor.match(/<(link|script)[^>]+?(href|src)\s*=\s*["'][^"']*\?(v?[^"']*)$/i);
+        if (versionAttr) return "version";
+
+        // CSS/JS detection
         var styleMatches = [...textBeforeCursor.matchAll(/<style[^>]*>/gi)];
         var styleEndMatches = [...textBeforeCursor.matchAll(/<\/style>/gi)];
         if (styleMatches.length > styleEndMatches.length) return "css";
@@ -75,44 +75,84 @@ define(function (require, exports, module) {
         var scriptEndMatches = [...textBeforeCursor.matchAll(/<\/script>/gi)];
         if (scriptMatches.length > scriptEndMatches.length) return "javascript";
 
-        if (fileExt === "html" || fileExt === "php") {
-            var lineText = editor.document.getLine(cursor.line);
-            var textUpToCursor = lineText.substring(0, cursor.ch);
+        // Inside a tag
+        var tagOpenMatch = textBeforeCursor.match(/<([a-zA-Z-]+)\s[^>]*$/);
+        if (tagOpenMatch) {
+            // inside class=""
+            var classAttrMatch = textBeforeCursor.match(/class\s*=\s*"[^"]*$/);
+            if (classAttrMatch) return "inclass";
 
-            let attrMatch = textUpToCursor.match(/([a-zA-Z-]+)\s*=\s*"([^"]*)$/);
-            if (attrMatch) {
-                let attrName = attrMatch[1].toLowerCase();
-                if (attrName === "class") {
-                    return "inclass";
-                } else {
-                    return "no-snippets"; 
-                }
-            }
+            // inside attribute value
+            var attrValueMatch = textBeforeCursor.match(/([a-zA-Z-]+)\s*=\s*["'][^"]*$/);
+            if (attrValueMatch) return "inattr";
+
+            // typing attribute name
+            return "tagattr";
         }
 
+        // Default by extension
         if (fileExt === "css") return "css";
         if (fileExt === "js") return "javascript";
         if (fileExt === "php") return "html";
         return "html";
     }
 
+    // --- parse token before cursor ---
     function parseLine(line, cursorPosition, context) {
         line = line.substring(0, cursorPosition);
-
         if (context === "inclass") {
             var match = line.match(/([\w-]+)$/);
             return match ? match[1] : "";
+        } else if (context === "inattr") {
+            var match = line.match(/([a-zA-Z0-9_-]+)$/);
+            return match ? match[1] : "";
+        } else if (context === "tagattr") {
+            var match = line.match(/([a-zA-Z-]*)$/);
+            return match ? match[1] : "";
+        } else if (context === "version") {
+            var match = line.match(/\?([a-zA-Z0-9_-]*)$/);
+            return match ? match[1] || "?" : "";
         } else {
             var match = line.match(/([a-zA-Z][a-zA-Z0-9_-]*)$/);
             return match ? match[0] : "";
         }
     }
 
+    // --- expand snippet ---
     function expandSnippet(editor, snippetKey, cursorPosition, line) {
         var context = getContext(editor);
         if (context === "no-snippets") return false;
 
         var snippetSet = flattenSnippets(snippets[context] || {});
+
+        var tag = getCurrentTag(editor);
+
+        // Merge general tagattr snippets
+        if (context === "tagattr" && tag && snippets[tag + "-tagattr"]) {
+            for (let key in snippets[tag + "-tagattr"]) {
+                if (key !== "class") snippetSet[key] = snippets[tag + "-tagattr"][key];
+            }
+        }
+
+        // Merge hero-slider class snippets if inside hero-slider class=""
+if (context === "inclass") {
+    const tagAttrKey = `${tag}-tagattr`;
+
+    if (snippets[tagAttrKey] && snippets[tagAttrKey]["class"]) {
+        const classSnippets = snippets[tagAttrKey]["class"];
+        for (let key in classSnippets) {
+            snippetSet[key] = classSnippets[key];
+        }
+    }
+
+    // Also merge generic "inclass" snippets for the tag
+    if (snippets["inclass"]) {
+        Object.assign(snippetSet, flattenSnippets(snippets["inclass"]));
+    }
+}
+
+
+
         if (!snippetSet[snippetKey]) return false;
 
         var startCh = cursorPosition.ch - snippetKey.length;
@@ -131,6 +171,7 @@ define(function (require, exports, module) {
         return true;
     }
 
+    // --- key handlers ---
     function keyEventHandler($event, editor, event) {
         enabled = prefs.get('enabled');
         if (!enabled) return;
@@ -148,7 +189,6 @@ define(function (require, exports, module) {
 
     function enterHandler(event) {
         if (event.keyCode !== KeyEvent.DOM_VK_RETURN) return;
-
         var editor = EditorManager.getActiveEditor();
         if (!editor) return;
 
@@ -172,10 +212,10 @@ define(function (require, exports, module) {
         }
     }
 
+    // --- hint provider ---
     function MADhints() {
         this.editor = null;
         this.filteredKeys = [];
-        this.currentTokenDefinition = /[a-zA-Z][a-zA-Z0-9_-]*$/;
     }
     MADhints.prototype.hasHints = function(editor) {
         this.editor = editor;
@@ -184,11 +224,33 @@ define(function (require, exports, module) {
         if (context === "no-snippets") return false;
 
         var snippetSet = flattenSnippets(snippets[context] || {});
+        var tag = getCurrentTag(editor);
+
+        if (context === "tagattr" && tag && snippets[tag + "-tagattr"]) {
+            for (let key in snippets[tag + "-tagattr"]) {
+                if (key !== "class") snippetSet[key] = snippets[tag + "-tagattr"][key];
+            }
+        }
+
+		if (context === "inclass") {
+			// List of tags that should use "tagattr" keys
+			const tagAttrTags = ["hero-slider", "main-header", "mad-card"]; 
+
+			if (tagAttrTags.includes(tag) && snippets[`${tag}-tagattr`] && snippets[`${tag}-tagattr`]["class"]) {
+				this.filteredKeys = Object.keys(snippets[`${tag}-tagattr`]["class"]);
+			} else {
+				this.filteredKeys = Object.keys(snippets["inclass"] || {});
+			}
+		}
+
+
+
         var lineText = editor.document.getLine(cursor.line);
         var textBeforeCursor = lineText.substring(0, cursor.ch);
         var input = parseLine(textBeforeCursor, textBeforeCursor.length, context);
 
         if (!input && context !== "inclass") return false;
+
         this.filteredKeys = Object.keys(snippetSet).filter(k => k.startsWith(input));
         return this.filteredKeys.length > 0;
     };
@@ -200,8 +262,27 @@ define(function (require, exports, module) {
         if (context === "no-snippets") return { hints: [], match: "", selectInitial: false, handleWideResults: false };
 
         var snippetSet = flattenSnippets(snippets[context] || {});
-        var input = parseLine(textBeforeCursor, textBeforeCursor.length, context);
+        var tag = getCurrentTag(this.editor);
 
+        if (context === "tagattr" && tag && snippets[tag + "-tagattr"]) {
+            for (let key in snippets[tag + "-tagattr"]) {
+                if (key !== "class") snippetSet[key] = snippets[tag + "-tagattr"][key];
+            }
+        }
+
+		if (context === "inclass") {
+			// List of tags that should use "tagattr" keys
+			const tagAttrTags = ["hero-slider", "main-header", "mad-card"]; 
+
+			if (tagAttrTags.includes(tag) && snippets[`${tag}-tagattr`] && snippets[`${tag}-tagattr`]["class"]) {
+				this.filteredKeys = Object.keys(snippets[`${tag}-tagattr`]["class"]);
+			} else {
+				this.filteredKeys = Object.keys(snippets["inclass"] || {});
+			}
+		}
+
+
+        var input = parseLine(textBeforeCursor, textBeforeCursor.length, context);
         var hints = this.filteredKeys.filter(k => k.startsWith(input));
         return {
             hints: hints,
@@ -219,8 +300,27 @@ define(function (require, exports, module) {
         if (context === "no-snippets") return false;
 
         var snippetSet = flattenSnippets(snippets[context] || {});
-        var snippetText = snippetSet[hint];
+        var tag = getCurrentTag(this.editor);
 
+        if (context === "tagattr" && tag && snippets[tag + "-tagattr"]) {
+            for (let key in snippets[tag + "-tagattr"]) {
+                if (key !== "class") snippetSet[key] = snippets[tag + "-tagattr"][key];
+            }
+        }
+
+		if (context === "inclass" && tag) {
+			const tagAttrKey = `${tag}-tagattr`;
+			if (snippets[tagAttrKey] && snippets[tagAttrKey]["class"]) {
+				const classSnippets = snippets[tagAttrKey]["class"];
+				if (classSnippets && typeof classSnippets === "object") {
+					for (let key in classSnippets) {
+						snippetSet[key] = classSnippets[key];
+					}
+				}
+			}
+		}
+
+        var snippetText = snippetSet[hint];
         var focusIndex = snippetText.indexOf("#focus");
         var cleanSnippet = snippetText.replace("#focus", "");
 
@@ -236,6 +336,7 @@ define(function (require, exports, module) {
         return false;
     };
 
+    // --- App init ---
     AppInit.appReady(function () {
         CommandManager.register(COMMAND_NAME, COMMAND_ID, function () {
             enabled = !enabled;
@@ -253,11 +354,12 @@ define(function (require, exports, module) {
         $(EditorManager).on('activeEditorChange', activeEditorChangeHandler);
 
         var jadHints = new MADhints();
-        CodeHintManager.registerHintProvider(jadHints, ["html","css","javascript","php","inclass"], 10);
+        CodeHintManager.registerHintProvider(jadHints, ["html","css","javascript","php","inclass","tagattr","inattr"], 10);
 
         prefs.on('change', function () {
             enabled = prefs.get('enabled');
             CommandManager.get(COMMAND_ID).setChecked(enabled);
         });
     });
+
 });

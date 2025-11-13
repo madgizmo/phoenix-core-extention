@@ -1,8 +1,81 @@
 define(function (require, exports, module) {
     'use strict';
 
+	const today = new Date();
+	const day = String(today.getDate()).padStart(2, '0');
+	const month = String(today.getMonth() + 1).padStart(2, '0'); // months start at 0
+	const year = today.getFullYear();
+	const currentDate = `${day}-${month}-${year}`;
+
+
     var snippets = {
+		"tagattr": {
+			"id": "id=\"#focus\"",
+			"class": "class=\"#focus\"",
+			"title": "title=\"#focus\"",
+		},		
+		"inattr": {
+			"zoom": "zoom",
+			"fade": "fade"
+		},
+		"main-header-tagattr": { 
+			"hero-effect-zoom": "hero-effect=\"zoom\"",
+			"hero-timing": "hero-timing=\"#focus\"",
+			"hero-overlay": "hero-overlay=\"#focus\"",
+			"class": { 
+				"full": "full",
+				"controlls": "controlls"			
+			}
+		},		
+		"hero-slider-tagattr": { 
+			"hero-effect-zoom": "hero-effect=\"zoom\"",
+			"hero-timing": "hero-timing=\"#focus\"",
+			"hero-overlay": "hero-overlay=\"#focus\"",
+			"class": { 
+				"dots": "dots",
+				"controlls": "controlls"			
+			}
+		},
+		version: {
+			"version": "<?= time(); ?>",
+			"?version": "<?= time(); ?>",
+		},		
 		inclass: {
+			"skin-body": "skin.body",
+			"skin-main": "skin.main",
+			"skin-sub": "skin.sub",
+			"skin-txt": "skin.txt",
+			"skin-light": "skin.light",
+			"skin-dark": "skin.dark",
+			"skin-primary": "skin.primary",
+			"skin-secondary": "skin.secondary",
+			"skin-warning": "skin.warning",
+			"skin-error": "skin.error",
+			"skin-danger": "skin.danger",
+			"skin-info": "skin.info",
+			"skin-success": "skin.success",
+			"skin-red": "skin.red",
+			"skin-amber": "skin.amber",
+			"skin-orange": "skin.orange",
+			"skin-yellow": "skin.yellow",
+			"skin-lime": "skin.lime",
+			"skin-green": "skin.green",
+			"skin-sky": "skin.sky",
+			"skin-blue": "skin.blue",
+			"skin-indigo": "skin.indigo",
+			"skin-violet": "skin.violet",
+			"skin-pink": "skin.pink",
+			"skin-purple": "skin.purple",
+			"skin-cyan": "skin.cyan",
+			"skin-teal": "skin.teal",
+			"skin-black": "skin.black",
+			"skin-white": "skin.white",
+			"skin-grey": "skin.grey",
+			"skin-sepia": "skin.sepia",
+			"skin-neon-green": "skin.neon.green",
+			"skin-neon-orange": "skin.neon.orange",
+			"skin-neon-blue": "skin.neon.blue",
+			"skin-neon-yellow": "skin.neon.yellow",			
 			"is-body": "is.body",
 			"is-main": "is.main",
 			"is-sub": "is.sub",
@@ -1261,25 +1334,153 @@ define(function (require, exports, module) {
 			"xxl-mb-6": "xxl:mb-6",
 			"xxl-my-6": "xxl:my-6",
 			"xxl-mx-6": "xxl:mx-6",
-			
+			"sticky-top": "sticky:top",
+			"sticky-bottom": "sticky:bottom",
 		},
         html: {
+				"?version": "?v=<?= time(); ?>",
+				"?v": "?v=<?= time(); ?>",
+				"template": "<!DOCTYPE HTML>\n\
+<html lang=\"en\">\n\
+<head>\n\
+\t<!-- Copyright 2016/"+year+" © Powered by Madw3b.Engine | https://madw3b.nl |  created at "+currentDate+" -->\n\
+\t<meta name=\"viewport\" content=\"width=device-width,initial-scale=1,maximum-scale=2,shrink-to-fit=no\"/>\n\
+\t<link rel=\"shortcut icon\" href=\"data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAh5JREFUOE+t009Ik2EcwPHv+77jXTrYltaYKbP8G9ND082D0cGgwzoYeK6DUBEdOkUQFEk1COnvwVuQGJ0kIoK6ePRdiRLqkmGzaWnZ3IZsa9P9e9/YUmMktUPP5XkOv9+H5/f7PY/Ar2UCnFvncrcJ4IewFd3d4j6nGCy2spLjXwN8GhtpB+Z2AOfZQcVcby8LiHycYvrpwP8DdMCV6uZOT4XZAqKEKEmIOplalxstn+P75Gv2x1YRMxukRR3L6QzhxQ+XgKFCCZ3AZNeFB0I+mybsf4el7SiaqvL+yVVE4L7LxWoqRSAep1qvJ5nL8SwY1IDW7R7c7Lk2en3+zWNs3b0sv33F4d6LfHvYj4yGp6OD2zMznGlsZDwUQi9JDC8sXAbubQN9rvN3n3/xviQ0N07NkePUudz0eIdJ5fPYTSYe+f0EYjH66utpMhq54/OdAMZ2plB7qE3RHWjhs/KCuq6TVIUXuXHQSk7TGPL7SasqE+Ew/U1NTEWj+NbXS6dwy+FQEtkssWwWa0UFjqoqdGKhA5Ap9CMaJby5yV5ZRhIEPLOzpcCg06nYzea/voMCsJJMktc0Bqan/wREQSCrqjQbjeyRpCKWyuWYj8Xwrq0Vb3TKZisiuwI1lZWMBAIsJpOomoYsiphkmXazmWNWK/v0+iI6FYnsDvyrhO36dgVONzQotQZDWX8hmEgwurRU0oNCZmtZ2b+D/MDGT8vB5DggBrzFAAAAAElFTkSuQmCC\">\n\
+\t<title property=\"schema:name\">Madw3bTemplate<\/title>\n\
+\t<meta http-equiv=\"cache-control\" content=\"no-cache\"/>\n\
+\t<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge,chrome=1\"/>\n\
+\t<meta name=\"referrer\" content=\"origin-when-cross-origin\"/>\n\
+\t<meta name=\"country\" content=\"en\"/>\n\
+\t<meta name=\"viewport\" content=\"width=device-width,initial-scale=1,maximum-scale=2,shrink-to-fit=no\"/>\n\
+\t<meta property=\"schema:description\" name=\"description\" content=\"Examples and usage guidelines for form control styles, layout options, and custom components for creating a wide variety of form\"/>\n\
+</head>\n\
+<body class=\"no-transition\">\n\
+\t<main>\n\
+	\t\t\n\
+\t</main>\n\
+\t<!-- Copyright 2016/"+year+" © Powered by Madw3b.Engine | https://madw3b.nl | created at "+currentDate+" -->\n\
+</body>\n\
+</html>\n",
+
+				"frameworktemplate": "<!DOCTYPE HTML>\n\
+<html lang=\"en\">\n\
+<head>\n\
+\t<!-- Copyright 2016/"+year+" © Powered by Madw3b.Engine | https://madw3b.nl |  created at "+currentDate+" -->\n\
+\t<meta name=\"viewport\" content=\"width=device-width,initial-scale=1,maximum-scale=2,shrink-to-fit=no\"/>\n\
+\t<link rel=\"shortcut icon\" href=\"data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAh5JREFUOE+t009Ik2EcwPHv+77jXTrYltaYKbP8G9ND082D0cGgwzoYeK6DUBEdOkUQFEk1COnvwVuQGJ0kIoK6ePRdiRLqkmGzaWnZ3IZsa9P9e9/YUmMktUPP5XkOv9+H5/f7PY/Ar2UCnFvncrcJ4IewFd3d4j6nGCy2spLjXwN8GhtpB+Z2AOfZQcVcby8LiHycYvrpwP8DdMCV6uZOT4XZAqKEKEmIOplalxstn+P75Gv2x1YRMxukRR3L6QzhxQ+XgKFCCZ3AZNeFB0I+mybsf4el7SiaqvL+yVVE4L7LxWoqRSAep1qvJ5nL8SwY1IDW7R7c7Lk2en3+zWNs3b0sv33F4d6LfHvYj4yGp6OD2zMznGlsZDwUQi9JDC8sXAbubQN9rvN3n3/xviQ0N07NkePUudz0eIdJ5fPYTSYe+f0EYjH66utpMhq54/OdAMZ2plB7qE3RHWjhs/KCuq6TVIUXuXHQSk7TGPL7SasqE+Ew/U1NTEWj+NbXS6dwy+FQEtkssWwWa0UFjqoqdGKhA5Ap9CMaJby5yV5ZRhIEPLOzpcCg06nYzea/voMCsJJMktc0Bqan/wREQSCrqjQbjeyRpCKWyuWYj8Xwrq0Vb3TKZisiuwI1lZWMBAIsJpOomoYsiphkmXazmWNWK/v0+iI6FYnsDvyrhO36dgVONzQotQZDWX8hmEgwurRU0oNCZmtZ2b+D/MDGT8vB5DggBrzFAAAAAElFTkSuQmCC\">\n\
+\t<title property=\"schema:name\">Madw3bTemplate<\/title>\n\
+\t<meta http-equiv=\"cache-control\" content=\"no-cache\"/>\n\
+\t<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge,chrome=1\"/>\n\
+\t<meta name=\"referrer\" content=\"origin-when-cross-origin\"/>\n\
+\t<meta name=\"country\" content=\"en\"/>\n\
+\t<meta name=\"viewport\" content=\"width=device-width,initial-scale=1,maximum-scale=2,shrink-to-fit=no\"/>\n\
+\t<meta property=\"schema:description\" name=\"description\" content=\"Examples and usage guidelines for form control styles, layout options, and custom components for creating a wide variety of form\"/>\n\
+\t<link href=\"../../scss/css/mad-framework.css\" rel=\"stylesheet\">\n\
+\t<link href=\"style.css?<?= time(); ?>\" rel=\"stylesheet\">\n\
+</head>\n\
+<body class=\"no-transition\">\n\
+\t<main>\n\
+	\t\t\n\
+\t</main>\n\
+\t<!-- Copyright 2016/"+year+" © Powered by Madw3b.Engine | https://madw3b.nl | created at "+currentDate+" -->\n\
+\t<script src=\"../../scss/js/framework.js\"></script>\n\
+\t<script src=\"../../scss/js/localstorage.js\"></script>\n\
+</body>\n\
+</html>\n",
+
+				"main-header": "<main-header>#focus</main-header>\n",		
+				"heros-lider": "\t\t<hero-slider class=\"dotss controlls\" hero-overlay=\"1\" hero-effect=\"zoom\" hero-timing=\"8\">\n\
+\t\t\t<div class=\"slides\">\n\
+\t\t\t\t<item-slide class=\"slide active\" style=\"background-image: url('img/bg.jpg')\">\n\
+\t\t\t\t\t<slide-text class=\"slide-text is.black\">\n\
+\t\t\t\t\t\t<h3>Welcome to Our Website</h3>\n\
+\t\t\t\t\t\t<p>Experience the best services with us</p>\n\
+\t\t\t\t\t</slide-text>\n\
+\t\t\t\t</item-slide>\n\
+\n\
+\t\t\t\t<item-slide class=\"slide\" style=\"background-image: url('img/wp12459723.webp')\">\n\
+\t\t\t\t\t<slide-text class=\"slide-text is.black\">\n\
+\t\t\t\t\t\t<h3>1Welcome to Our Website</h3>\n\
+\t\t\t\t\t\t<p>1Experience the best services with us</p>\n\
+\t\t\t\t\t</slide-text>\n\
+\t\t\t\t</item-slide>\n\
+\n\
+\t\t\t\t<item-slide class=\"slide\" style=\"background-image: url('img/download.jpg')\">\n\
+\t\t\t\t\t<slide-text class=\"slide-text is.black\">\n\
+\t\t\t\t\t\t<h3>1Welcome to Our Website</h3>\n\
+\t\t\t\t\t\t<p>1Experience the best services with us</p>\n\
+\t\t\t\t\t</slide-text>\n\
+\t\t\t\t</item-slide>\n\
+\t\t\t</div>\n\
+\t\t\t<button class=\"prev\">&#10094;</button>\n\
+\t\t\t<button class=\"next\">&#10095;</button>\n\
+\t\t\t<slider-dots class=\"dots\"></slider-dots>\n\
+\t\t</hero-slider>\n",	
 				"script": "<script>#focus</script>\n",
-				"style": "<style>#focus</style>\n",		
-				"js-file": "<script src=\"#focus\"></script>\n",		
-				"css-file": "<link href=\"#focus\" rel=\"stylesheet\">\n",		
+				"script-file": "<script src=\"script.js#focus\"></script>\n",	
+				"js-file": "<script src=\"#focus\"></script>\n",	
+				"style": "<style>#focus</style>\n",			
+				"stylesheet": "<link href=\"style.css#focus\" rel=\"stylesheet\">\n",	
+				"css-file": "<link href=\"#focus\" rel=\"stylesheet\">\n",
+			meta: {
+				"viewport": "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1,maximum-scale=2,shrink-to-fit=no\"/>\n",
+				"referrer": "<meta name=\"referrer\" content=\"origin-when-cross-origin\"/>\n",
+				"country": "<meta name=\"country\" content=\"en\"/>\n",
+				"compatible": "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge,chrome=1\"/>\n",
+				"description": "<meta property=\"schema:description\" name=\"description\" content=\"Examples and usage guidelines for form control styles, layout options, and custom components for creating a wide variety of form\"/>\n",
+				"manifest": "\t<link rel=\"manifest\" href=\"manifest.json\" crossorigin=\"use-credentials\">\n",
+				"mobile": "<link rel=\"apple-touch-icon\" sizes=\"57x57\" href=\"https://madw3b.nl/je/img/app.png?w=57\">\n\
+	<link rel=\"apple-touch-icon\" sizes=\"60x60\" href=\"https://madw3b.nl/je/img/app.png?w=60\">\n\
+	<link rel=\"apple-touch-icon\" sizes=\"72x72\" href=\"https://madw3b.nl/je/img/app.png?w=72\">\n\
+	<link rel=\"apple-touch-icon\" sizes=\"76x76\" href=\"https://madw3b.nl/je/img/app.png?w=76\">\n\
+	<link rel=\"apple-touch-icon\" sizes=\"120x120\" href=\"https://madw3b.nl/je/img/app.png?w=120\">\n\
+	<link rel=\"apple-touch-icon\" sizes=\"144x144\" href=\"https://madw3b.nl/je/img/app.png?w=144\">\n\
+	<link rel=\"apple-touch-icon\" sizes=\"152x152\" href=\"https://madw3b.nl/je/img/app.png?w=152\">\n\
+	<link rel=\"apple-touch-icon\" sizes=\"180x180\" href=\"https://madw3b.nl/je/img/app.png?w=180\">\n\
+	<!-- Apple and Android -->\n\
+	<meta name=\"mobile-web-app-capable\" content=\"no\">\n\
+	<meta name=\"apple-mobile-web-app-capable\" content=\"no\">\n\
+	<meta name=\"apple-mobile-web-app-title\" content=\"madw3b\">\n\
+	<meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black\"/>\n\
+	<meta name=\"theme-color\" content=\"#242526\"/>\n",	
+
+	
+			},	
+			section: "<section class=\"container\">\n	<div class=\"row\">\n		<div class=\"md:col/6\">\n\n		</div>\n	</div>\n</section>\n",
+			close: "<button data-action=\"close\" class=\"close\"></button>\n",
 			btn: {
-				"full": "<section class=\"container\">\n	<div class=\"row\">\n		<div class=\"md:col/6\">\n\n		</div>\n	</div>\n</section>\n",
-				"base": "<div class=\"full:container\">\n#focus\n</div>\n",
+				"basic": "<button class=\"btn\">#focus</button>\n",
+				"icon-left": "<button class=\"btn\"><i class=\"\"></i>#focus</button>\n",
+				"icon-right": "<button class=\"btn\">#focus<i class=\"\"></i></button>\n",
+				"icon-only": "<button class=\"btn\"><i class=\"\"></i></button>\n",
+			},	
+
+			ul: {
+				"list": "<ul class=\"list\"><li></li></ul>\n",
+				
+			},	
+			list: {
+				"description": "<dl class=\"list-dl\">\n\
+          <dt>Bevestiging</dt><dd>Direct per e-mail</dd>\n\
+          <dt>Reactietijd</dt><dd>Binnen 48 uur</dd>\n\
+          <dt>Gesprek</dt><dd>Vrijblijvende intake</dd>\n\
+          <dt>Offerte</dt><dd>Op maat, schriftelijk</dd>\n\
+        </dl>\n",
+				"underline": "<ul class=\"list-ul\"><li></li></ul>\n",
+			},				
+			
+			container: {
+				"base": "<div class=\"container\">\n	<div class=\"row\">\n		<div class=\"md:col/6\">\n\n		</div>\n	</div>\n</div>\n",
+				"full": "<div class=\"full:container\">\n	<div class=\"row\">\n		<div class=\"md:col/6\">\n\n		</div>\n	</div>\n</div>\n",
 			},	
 			"input": {
 				// Textual Inputs
-				"text": '<input type="text" class="ct-text" value="" placeholder="" id="" name="">\n',
+				"text": '<input type="text" class="ct-text" value="" placeholder="" id="" name="" autocomplete="off">\n',
 				"password": '<input type="password" class="ct-text" value="" placeholder="" id="" name="">\n',
 				"email": '<input type="email" class="ct-text" value="" placeholder="" id="" name="">\n',
 				"tel": '<input type="tel" class="ct-text" value="" placeholder="" id="" name="">\n',
 				"url": '<input type="url" class="ct-text" value="" placeholder="" id="" name="">\n',
-				"search": '<input type="search" class="ct-text" value="" placeholder="" id="" name="">\n',
+				"search": '<input type="search" class="search" value="" placeholder="zoeken" id="" name="mad-search" autocomplete="off">\n',
 
 				// Numeric Inputs
 				"number": '<input type="number" class="ct-text" value="" placeholder="" id="" name="">\n',
@@ -1308,8 +1509,10 @@ define(function (require, exports, module) {
 				// Hidden
 				"hidden": '<input type="hidden" value="" id="" name="">\n'
 			},
-			
-			section: {
+			form: {
+				"label": '<label for="#focus">Label</label>\n'
+			},
+			sectiona: {
 				"full": "<section class=\"container\">\n	<div class=\"row\">\n		<div class=\"md:col/6\">\n\n	#focus	</div>\n	</div>\n</section>\n",
 				"base": "<div class=\"full:container\">\n#focus\n</div>\n",
 				
@@ -1320,6 +1523,34 @@ define(function (require, exports, module) {
 				"row": "<div class=\"row\">\n\n</div>\n",
 
 			},
+			preloader: {
+				"preloader": "<div class=\"preloader\">Madw3b</div>\n",
+			},
+			nav: {
+				"navbar": "<nav data-type=\"sidebar\" class=\"mad-nav blocks blur sticky:top\">\n\
+	<div class=\"head\">\n\
+		<img src=\"img/mw_logo_light.png\" class=\"navbar-logo mx-2\" id=\"navbarLogo\" dark-src=\"img/mw_logo_dark.png\" data-dark-src=\"img/mw_logo_dark.png\">\n\
+	</div>\n\
+	<div class=\"main\">\n\
+		<ul class=\"main-menu\">\n\
+			<!-- Menu will be here -->\n\
+		</ul>\n\
+	</div>\n\
+	<div class=\"foot\">\n\
+		<button data-set=\"site-theme\"><i></i></button>\n\
+		<button><i class=\"ri-shopping-cart-line\"></i></button>\n\
+		<button data-toggle=\"searchbox\"><i class=\"ri-search-line\"></i></button>\n\
+	</div>\n\
+</nav>",
+				"link": "<li><a href=\"#\" aria-label=\"Link\">Link</a></li>\n",
+				"submenu": "<li class=\"has-sub\"><a href=\"#\" aria-label=\"Subitem\">sub Link</a>\n\
+	<ul class=\"is-sub\">\n\
+	<li><a href=\"#\" aria-label=\"Subitem\">Subitem</a></li>\n\
+	<li><a href=\"#\" aria-label=\"Subitem\">Subitem</a></li>\n\
+	</ul>\n\
+</li>\n",
+
+			},			
 			col: {
 				"1": "<div class=\"col/1\">\n\n</div>\n",
 				"2": "<div class=\"col/2\">\n\n</div>\n",
@@ -1481,8 +1712,16 @@ define(function (require, exports, module) {
         },
 
         php: {
-			madforeach: "foreach($array as $item): ?>\n\n<?php endforeach; ?>",
-			madif: "if($condition): ?>\n\n<?php endif; ?>",
+			foreach: "foreach($array as $item): ?>\n\n<?php endforeach; ?>",
+			if: "if($condition): ?>\n\n<?php endif; ?>",
+switch: "$action = isset($_POST['action']) ? json_decode($_POST['action'], true) : '';\n\
+switch ($action):\n\
+    case 'UpdateSettings':\n\n\
+    break;\n\n\
+    default:\n\n\
+    break;\n\n\
+endswitch;\n",
+
 			func: {
 				myfunc: "function myFunction($param) {\n    // code\n}\n",
 				helper: "function helperFunction() {\n    // code\n}\n"
@@ -1565,6 +1804,7 @@ define(function (require, exports, module) {
                 wrap: "display: flex; \nflex-wrap: wrap;",
                 nowrap: "display: flex; \nflex-wrap: nowrap;"
             }
+
         },
 
         javascript: {
@@ -1601,7 +1841,7 @@ define(function (require, exports, module) {
 })();`,
     "document-ready": "\ndocument.addEventListener(\"DOMContentLoaded\", function() {\n    // your code here\n});\n",
 	"form-select": "\ndocument.querySelectorAll('select').forEach((select) => {\n    // Example: on change\n    select.addEventListener('change', (event) => {\n        console.log('Selected value:', event.target.value);\n    });\n\n    // Example: on focus (hover alternative)\n    select.addEventListener('focus', () => {\n        console.log('Select focused');\n    });\n});\n",
-	
+	"function": "function functionName() {};",
     // Event listeners
     "on-click": "element.addEventListener('click', () => {\n\n});",
     "on-change": "element.addEventListener('change', (e) => {\n    const value = e.target.value;\n});",
