@@ -17,6 +17,7 @@ define(function (require, exports, module) {
         COMMAND_NAME      = 'Enable Mad Snippets',
         COMMAND_ID        = 'madapbox.toggleMADSnippets';
 
+		ExtensionUtils.loadStyleSheet(module, "style.css");
     // --- flatten nested snippets ---
     function flattenSnippets(obj, prefix = "") {
         let result = {};
@@ -371,8 +372,206 @@ define(function (require, exports, module) {
         return false;
     };
 
+function buildSnippetList() {
+    var editor = EditorManager.getActiveEditor();
+    if (!editor) return;
+
+    var context = getContext(editor);
+    var flat = {};
+
+    // pick snippets based on context
+    if (context === "css") flat = flattenSnippets(snippets.css || {});
+    else if (context === "javascript") flat = flattenSnippets(snippets.js || {});
+    else if (context === "inclass") {
+        const tag = getCurrentTag(editor);
+        const tagAttrKey = tag ? `${tag}-tagattr` : null;
+        if (tagAttrKey && snippets[tagAttrKey] && snippets[tagAttrKey]["class"])
+            flat = snippets[tagAttrKey]["class"];
+        else flat = flattenSnippets(snippets.inclass || {});
+    }
+    else if (context === "inattr" || context === "tagattr") {
+        const tag = getCurrentTag(editor);
+        if (tag && snippets[tag + "-tagattr"]) {
+            flat = Object.assign({}, snippets[tag + "-tagattr"]);
+            delete flat.class;
+        }
+    }
+    else if (context === "phpinside") flat = flattenSnippets(snippets.phpinside || {});
+    else if (context === "php") flat = flattenSnippets(snippets.php || {});
+    else if (context === "html") {
+        flat = flattenSnippets(snippets.html || {});
+
+        // include external html/php snippets
+        if (snippets.inSnippets) {
+            Object.keys(snippets.inSnippets).forEach(k => {
+                flat[k] = "(external)";
+            });
+        }
+
+        // include global snippets
+        if (snippets.global) Object.assign(flat, flattenSnippets(snippets.global));
+    }
+
+    // --- search filter ---
+    var searchVal = $("#mad-snippet-search").val().toLowerCase();
+    var html = "";
+    Object.keys(flat).forEach(function(key){
+        if (!searchVal || key.toLowerCase().includes(searchVal)) {
+            html += '<div class="mad-snippet-item" data-key="' + key + '">' + key + '</div>';
+        }
+    });
+
+    $("#mad-snippet-panel .mad-panel-body").html(html);
+}
+
+
+
+
+
+
     // --- App init ---
     AppInit.appReady(function () {
+
+    // --- panel container ---
+	var panelHtml =
+		'<div id="mad-snippet-panel" class="mad-panel">' +
+		'  	<div class="mad-panel-header">' +
+		'     	<div class="panel-title"><img src="data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAh5JREFUOE+t009Ik2EcwPHv+77jXTrYltaYKbP8G9ND082D0cGgwzoYeK6DUBEdOkUQFEk1COnvwVuQGJ0kIoK6ePRdiRLqkmGzaWnZ3IZsa9P9e9/YUmMktUPP5XkOv9+H5/f7PY/Ar2UCnFvncrcJ4IewFd3d4j6nGCy2spLjXwN8GhtpB+Z2AOfZQcVcby8LiHycYvrpwP8DdMCV6uZOT4XZAqKEKEmIOplalxstn+P75Gv2x1YRMxukRR3L6QzhxQ+XgKFCCZ3AZNeFB0I+mybsf4el7SiaqvL+yVVE4L7LxWoqRSAep1qvJ5nL8SwY1IDW7R7c7Lk2en3+zWNs3b0sv33F4d6LfHvYj4yGp6OD2zMznGlsZDwUQi9JDC8sXAbubQN9rvN3n3/xviQ0N07NkePUudz0eIdJ5fPYTSYe+f0EYjH66utpMhq54/OdAMZ2plB7qE3RHWjhs/KCuq6TVIUXuXHQSk7TGPL7SasqE+Ew/U1NTEWj+NbXS6dwy+FQEtkssWwWa0UFjqoqdGKhA5Ap9CMaJby5yV5ZRhIEPLOzpcCg06nYzea/voMCsJJMktc0Bqan/wREQSCrqjQbjeyRpCKWyuWYj8Xwrq0Vb3TKZisiuwI1lZWMBAIsJpOomoYsiphkmXazmWNWK/v0+iI6FYnsDvyrhO36dgVONzQotQZDWX8hmEgwurRU0oNCZmtZ2b+D/MDGT8vB5DggBrzFAAAAAElFTkSuQmCC">'+
+		'			<span>Mad Snippets</span>' +
+		'		</div>' +
+		'		<input type="text" id="mad-snippet-search" placeholder="Search..." autocomplete="off"/>' +
+		'   </div>' +
+		'  	<div class="mad-panel-body"></div>' +
+		'</div>';
+	$("body").append(panelHtml);
+
+	var panelpreview = '<div id="mad-snippet-preview"></div>';
+	$("body").append(panelpreview);
+	
+$(document).on("mouseenter", ".mad-snippet-item", function(e){
+    var key = $(this).data("key");
+    var flat = {};
+    var editor = EditorManager.getActiveEditor();
+    if (!editor) return;
+
+    var context = getContext(editor);
+
+    // Build snippet set same as buildSnippetList()
+    if (context === "css") flat = flattenSnippets(snippets.css || {});
+    else if (context === "javascript") flat = flattenSnippets(snippets.js || {});
+    else if (context === "inclass") {
+        const tag = getCurrentTag(editor);
+        const tagAttrKey = tag ? `${tag}-tagattr` : null;
+        if (tagAttrKey && snippets[tagAttrKey] && snippets[tagAttrKey]["class"])
+            flat = snippets[tagAttrKey]["class"];
+        else flat = flattenSnippets(snippets.inclass || {});
+    }
+    else if (context === "inattr" || context === "tagattr") {
+        const tag = getCurrentTag(editor);
+        if (tag && snippets[tag + "-tagattr"]) {
+            flat = Object.assign({}, snippets[tag + "-tagattr"]);
+            delete flat.class;
+        }
+    }
+    else if (context === "phpinside") flat = flattenSnippets(snippets.phpinside || {});
+    else if (context === "php") flat = flattenSnippets(snippets.php || {});
+    else if (context === "html") {
+        flat = flattenSnippets(snippets.html || {});
+        if (snippets.global) Object.assign(flat, flattenSnippets(snippets.global));
+
+        // external preview
+        if (snippets.inSnippets && snippets.inSnippets[key]) {
+            tryLoadExternalSnippet(key, function(content){
+                $("#mad-snippet-preview").text(content || "No preview");
+            });
+        }
+    }
+
+    // internal snippet preview
+    if (flat[key] && flat[key] !== "(external)") {
+        $("#mad-snippet-preview").text(flat[key].replace("#focus", ""));
+    }
+
+    $("#mad-snippet-preview").css({ top: e.pageY + 10, left: e.pageX + 10 }).show();
+});
+
+	$(document).on("mousemove", ".mad-snippet-item", function(e){
+		$("#mad-snippet-preview").css({ top: e.pageY + 10, left: e.pageX + 10 });
+	});
+
+	$(document).on("mouseleave", ".mad-snippet-item", function(){
+		$("#mad-snippet-preview").hide().text("");
+	});
+	
+	
+    // --- toolbar button ---
+    var buttonHtml =
+        '<a id="mad-snippets-btn" href="#" title="Mad Snippets" class="toolbar-button">' +
+        '   <span class="fa fa-code"></span>' +
+        '</a>';
+
+    $("#main-toolbar .buttons").append(buttonHtml);
+
+    // --- panel toggle ---
+	$(document).on("click", "#mad-snippets-btn", function (e) {
+		e.preventDefault();
+		var panel = $("#mad-snippet-panel");
+		if (!panel.hasClass("active")) {
+			buildSnippetList(); // populate panel only when opening
+		}
+		panel.toggleClass("active");
+	});
+
+	
+    // --- search filter ---
+    $(document).on("input", "#mad-snippet-search", buildSnippetList);	
+
+    // --- snippet click ---
+	$(document).on("click", ".mad-snippet-item", function () {
+		var key = $(this).data("key");
+		var editor = EditorManager.getActiveEditor();
+		if (!editor) return;
+
+		var cursor = editor.getCursorPos();
+		var snippetText;
+
+		// --- flatten all snippets into one object ---
+		var flatSnippets = {};
+		Object.keys(snippets).forEach(function(ctx){
+			if (typeof snippets[ctx] === "object") {
+				Object.assign(flatSnippets, flattenSnippets(snippets[ctx]));
+			}
+		});
+
+		// check flattened snippets first
+		if (flatSnippets[key]) {
+			snippetText = flatSnippets[key];
+			editor.document.replaceRange(snippetText.replace("#focus",""), cursor);
+			// $("#mad-snippet-panel").hide();
+			return;
+		}
+
+		// check external snippets
+		if (snippets.inSnippets && snippets.inSnippets[key]) {
+			tryLoadExternalSnippet(key, function(content){
+				if (!content) return;
+				insertSnippetText(editor, content, cursor, 0);
+				// $("#mad-snippet-panel").hide();
+			});
+			return;
+		}
+	});
+
+		// --- update panel dynamically when editor or cursor changes ---
+		$(EditorManager).on('activeEditorChange', function () {
+			buildSnippetList();
+		});
+		$(document).on('keyup click', '.CodeMirror-scroll', function () {
+			if ($("#mad-snippet-panel").is(":visible")) buildSnippetList();
+		});
+
+		// Original code
+		
         CommandManager.register(COMMAND_NAME, COMMAND_ID, function () {
             enabled = !enabled;
             prefs.set('enabled', enabled);

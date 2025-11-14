@@ -1,0 +1,142 @@
+/* Panel container */
+#mad-snippet-panel {
+	display: none; 
+      user-select: none;       /* Standard syntax */
+    -webkit-user-select: none; /* Chrome, Safari, Opera */
+    -moz-user-select: none;    /* Firefox */
+    -ms-user-select: none;     /* Internet Explorer/Edge */ 
+    position: absolute;
+    top: 40px;
+    right: 40px;
+    width: 300px;
+    height: 400px;
+    background: rgba(0,0,0,.2);
+	backdrop-filter: blur(10px);
+    color: #fff;
+    border: 1px solid #666;
+    z-index: 9999;
+    font-family: sans-serif;
+	box-sizing: border-box;
+   /* display: flex; */
+   flex-direction: column;
+   flex-wrap: wrap;
+   justify-content: space-between;
+   gap: 0px;	
+}
+#mad-snippet-panel.active {
+    display: flex; /* visible when active */
+}
+/* Header */
+#mad-snippet-panel .mad-panel-header {
+   display: inline-flex !important;
+   width:100% !important;
+   flex-direction: column;
+   flex-wrap: wrap;
+   gap: 0px;
+   position:relative;
+   padding:0px;
+   flex:0;
+}
+#mad-snippet-panel .mad-panel-header .panel-title{
+	margin:.4rem;
+	font-size:.7rem;
+   display: flex;
+   flex-wrap: wrap;
+   align-items: flex-start;
+   align-content: center;
+   gap: 0px;	
+}
+#mad-snippet-panel .mad-panel-header .panel-title span{
+margin-left:.4rem;
+line-height:17px;
+}
+
+#mad-snippet-search {
+    background: rgba(0,0,0,.5);
+    outline: none !important;
+    box-shadow: none !important;
+    border: 0 !important;
+    padding: .4rem;
+    color: #fff;
+    display: inline-block;
+    width: 90%;
+    margin: 0 auto;
+
+    /* Remove browser-specific focus styles */
+    -webkit-appearance: none;
+}
+
+#mad-snippet-search:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border: 0 !important;
+}
+
+
+
+#mad-snippet-panel .mad-panel-body {
+    flex: 1;
+    position: relative;
+    overflow-y: auto; /* scroll vertically */
+    overflow-x: hidden; /* prevent horizontal overflow */
+    display: flex;      /* use flex instead of inline */
+    flex-direction: column; /* stack children vertically */
+    gap: 0;       /* optional spacing between items */
+    box-sizing: border-box; /* ensure padding/borders are included in width */
+	margin:.3rem;
+}
+/* Panel scrollbar */
+#mad-snippet-panel .mad-panel-body::-webkit-scrollbar {
+    width: 1px;               /* width of vertical scrollbar */
+    height: 8px;              /* height of horizontal scrollbar */
+}
+
+#mad-snippet-panel .mad-panel-body::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1); /* track color */
+    border-radius: 0;
+}
+
+#mad-snippet-panel .mad-panel-body::-webkit-scrollbar-thumb {
+    background-color: #ff6b6b;  /* thumb color */
+    border-radius: 0;
+    border: 2px solid rgba(0,0,0,0.2); /* optional border around thumb */
+}
+
+#mad-snippet-panel .mad-panel-body::-webkit-scrollbar-thumb:hover {
+    background-color: #ff4b4b; /* hover effect */
+}
+
+
+#mad-snippet-panel .mad-panel-body .mad-snippet-item{
+	
+	padding:.2rem;
+	word-break: break-word;
+	cursor:pointer;
+	margin:0;
+}
+
+#mad-snippet-panel .mad-panel-body .mad-snippet-item:hover{
+	background-color:#ff4b4b;
+}
+
+
+#mad-snippet-preview {
+	position:absolute;
+	top:0;
+	left:0;
+	z-index:99999;
+	background:rgba(0,0,0,0.85);
+	color:#fff;
+	padding:10px;
+	font-family:monospace;
+	font-size:12px;
+	border:1px solid #444;
+	border-radius:4px;
+	display:block;
+	max-width:400px;
+	white-space:pre-wrap;
+	pointer-events:none;
+}
+.mad-snippet-item:hover {
+	background:rgba(255,255,255,0.1);
+}

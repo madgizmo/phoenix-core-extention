@@ -17,6 +17,7 @@
     ],
     "files": [
         "main.js",
+		"style.css",
         "snippet.js",
         "README.md"
     ],

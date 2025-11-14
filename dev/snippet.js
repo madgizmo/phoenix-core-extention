@@ -5,6 +5,7 @@ define(function (require) {
 	var snippetsPhpInside   = require('jssnippets/snippets-php');
     var snippetsIsInClass     = require('jssnippets/snippets-inclass');
 	var snippetsJs     		= require('jssnippets/snippets-js');
+	var snippetsHtml     		= require('jssnippets/snippets-html');
 
     function merge(a, b) {
         for (var k in b) {
@@ -56,6 +57,8 @@ define(function (require) {
 	snippets.inclass = merge(snippets.inclass, snippetsIsInClass); 
     snippets.js   = merge(snippets.js, snippetsJs);
     snippets.html = merge(snippets.html, snippetsGlobal);
+	snippets.html = merge(snippets.html, snippetsHtml);
+	
     snippets.css  = merge(snippets.css, snippetsCss);
 	snippets.php = merge(snippets.php, snippetsPhp); 
 	snippets.phpinside  = merge(snippets.phpinside, snippetsPhpInside);
